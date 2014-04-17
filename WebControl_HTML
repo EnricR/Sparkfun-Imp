@@ -1,0 +1,35 @@
+<html>
+<head>
+</head>
+
+<body onLoad=updateURL()>
+
+<h4>What is your agent's url?</h4>
+<form name="url">
+https://agent.electricimp.com/<input type="text" name="agentUrl" placeholder="UpyYpRLmBB7m" onChange=updateURL()>
+</form>
+
+<h4>Imp Inputs:</h4>
+<form name="leds" id="ledSend" method="get">
+Lonely Red LED: <input type="radio" name="led" value="0" checked>Off
+                <input type="radio" name="led" value="1">On<br>
+Set the RGB LED: <input type="color" name="rgb">  (Chrome/Opera use color input, other browsers format as "#XXXXXX", where X is 0-9, a-f, or A-F.) <br>
+How long should the LEDs stay on? <input type="text" name="timer" value="10">seconds<br>
+Your name? So we know who to blame! <input type="text" name="user" placeholder="Your name here"><br>
+<br>
+<input type="submit" value="Update!">
+</form>
+
+</body>
+
+<script language="javascript">
+
+ function updateURL() {
+    ledForm = document.leds;
+    urlForm = document.url;
+    ledForm.action = "https://agent.electricimp.com/" + urlForm.agentUrl.value;
+}
+
+</script>
+
+</html>

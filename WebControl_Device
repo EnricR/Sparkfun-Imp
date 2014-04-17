@@ -1,0 +1,99 @@
+/* Electric Imp Web-controlled LEDs
+    by: Jim Lindblom
+    SparkFun Electronics
+    date: November 1, 2013
+    license: Beerware. Please use, reuse, and modify this code.
+    If you find it useful, buy me a beer some day!
+
+    This is a simple electric imp example, which shows how to interface
+    the imp with an agent and webpage. This example code goes hand-in-hand with 
+    an HTML webpage. Check out this page for more information: 
+    https://learn.sparkfun.com/tutorials/electric-imp-breakout-hookup-guide/example-2-web-control
+    This will show how you can use html color, text, and radio form inputs
+    to control LEDs on/off, PWM them, and set a timer to turn them off.
+
+    Circuit:
+    A common cathode RGB LED is connected to the imp's pins 1, 2, and 5.
+    The red anode connects to 1 through a 47 Ohm resistor, green 2, and blue 5.
+    The cathode of the LED connects to ground.
+    Another simple, red LED is connected to the imp to imp pin 9, through
+    another 47 Ohm resistor. The cathode of the LED is grounded.
+*/
+
+imp.configure("LED Web Control", [], []); // Configure the imp
+
+///////////////
+// Pin Setup //
+///////////////
+// Setup reference variables for our pins:
+redPin <- hardware.pin1;   // R of RGB
+greenPin <- hardware.pin2; // G of RGB
+bluePin <- hardware.pin5;  // B of RGB
+ledPin <- hardware.pin9;   // Lonely red LED
+
+// Configure our pins:
+ledPin.configure(DIGITAL_OUT);        // Simple digital output
+redPin.configure(PWM_OUT, 0.01, 0);   // PWM output 10ms clock, off
+greenPin.configure(PWM_OUT, 0.01, 0); // PWM output 10ms clock, off
+bluePin.configure(PWM_OUT, 0.01, 0);  // PWM output 10ms clock, off
+
+/////////////////////////////////
+// Agent Function Declarations //
+/////////////////////////////////
+// setLed will turn the lonely red LED on or off.
+// This function will be called by the agent.
+function setLed(ledState) 
+{
+    ledPin.write(ledState);
+}
+
+// setRGB will take a table input, and set the RGB LED accordingly.
+// the table input should have parameters 'r', 'g', and 'b'.
+// This function will be called by the agent.
+function setRGB(rgbValue)
+{
+    bluePin.write(rgbValue.b/255.0);
+    redPin.write(rgbValue.r/255.0);
+    greenPin.write(rgbValue.g/255.0);
+}
+
+// setUser will print out to the log the name of the LED changer
+// This function will be called by the agent.
+function setUser(suspect)
+{
+    server.log(suspect + " set the LEDs.");
+}
+
+// setTimer will turn the LEDs off after a specified number of seconds
+// This function will be called by the agent.
+function setTimer(time)
+{
+    if (time != 0)
+        imp.wakeup(time, ledsOff); // Call ledsOff in 'time' seconds.
+}
+
+///////////////////////////////////
+// Important Agent Handler Stuff //
+///////////////////////////////////
+// Each object that the agent can send us needs a handler, which we define with
+// the agent.on function.  The first parameter in agent.on is an identifier 
+// string which must be matched by the sending agent. The second parameter is
+// the name of a function to be called. These functions are already defined up
+// above.
+agent.on("led", setLed);
+agent.on("rgb", setRGB);
+agent.on("user", setUser);
+agent.on("timer", setTimer);
+
+//////////////////////
+// Helper Functions //
+//////////////////////
+
+// ledsOff just turns all LEDs off.
+function ledsOff()
+{
+    ledPin.write(0);
+    redPin.write(0);
+    greenPin.write(0);
+    bluePin.write(0);
+}

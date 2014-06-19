@@ -1,6 +1,6 @@
 <html>
 <head>  
-    <title>This is circuitFlower</title>
+    <title>Electric Imp Breakout</title>
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
     <script>
@@ -10,7 +10,7 @@
             // https://agent.electricimp.com/UpyYpRLmBB7m
             // pollRate defines how often the values on your page will refresh.
             var externalURL ="kcrkIKk9Tysm";
-            var pollRate ="10";
+            var pollRate ="1";
 
             function poll(){
                 // Construct an ajax() GET request.
@@ -33,7 +33,7 @@
                     }
                 });
             }
-
+            
             // setInterval is Javascript method to call a function at a specified interval.
             // http://www.w3schools.com/jsref/met_win_setinterval.asp
             setInterval(function(){ poll(); }, pollRate);
@@ -41,9 +41,9 @@
             // This function updates the 
             function updateBG(lightSensor)
             {
-                if (lightSensor > 30000)
+                if (lightSensor > 35000)
                 {
-                    document.body.style.backgroundColor = '#0d003c';
+                    document.body.style.backgroundColor = '#a33';
                     
                     
                 }
@@ -66,6 +66,6 @@
     		background-size: 100% 100%;
     	}
     	</style>
-       <img class="flower" src="flower.svg" width="50%" height="auto" >
+       <img class="flower" src="heart.svg" width="50%" height="auto" >
     </body>
 </html>

@@ -1,52 +1,27 @@
-/*  electric imp Web Response Example (device)
-    by: Jim Lindblom
-    SparkFun Electronics
-    date: November 5, 2013
-    modified by: Amanda Ervin
-    date modified: 6/17/2014
-    license: Beerware. Use, reuse, and modify this code however you see fit.
-    If you find it useful, buy me a beer some day!
-    The idea for this code was inspired by this gist by industrialinternet:
-    https://gist.github.com/industrialinternet/5419730
-
-    This example code demonstrates how an imp can publish information to a
-    webpage. Pin 2 is configured as an input. It can be either
-    digital or analog. 
-
-    There are three parts to this code:
-    1. The imp (device) code. The imp itself simply reads its pin values, and
-        sends them out to the agent.
-    2. The agent code. The agent waits for an http request. On such a request,
-        it'll construct a JSON of the imp's pin values, and respond with that.
-    3. An html page to make the http request and handle the response from the agent.
-        There are a number of ways to do this. See one example at the bottom of
-        The agent code.
-*/
-
-///////////
-// Setup //
-///////////
-
-// Register imp. This good practice: 
-imp.configure("Imp Pin Web Response",[],[]);
-
-// Configure pins:
-
-hardware.pin2.configure(ANALOG_IN);
-
-//////////////////////////
-// Function Definitions //
-//////////////////////////
-
-// sendPins reads each of the pins, stores them in a table, and sends that 
-// table out to the agent.
-// It calls itself every 100ms -- 10 times a second.
-function sendPins()
+// Alias Pin 2 as pot
+ 
+pot <- hardware.pin2;
+led <- hardware.pin7;
+ 
+// Configure pins
+ 
+pot.configure(ANALOG_IN);
+led.configure(DIGITAL_OUT);
+ 
+function poll()
 {
-    // Read each of the pins and store them in a table.
-    // The key names -- "pin1", "pin2", etc. -- should be kept the same, unless
-    // you also change them in the device.on() function on the agent.
-    local pinValues = 
+    // Read the pin and log its value
+    
+    server.log(pot.read());
+    if (pot.read()> 35000){
+        led.write(1);
+    }
+    
+    else {
+        led.write(0);
+    }
+    // Wake up in 0.1 seconds and do it again
+     local pinValues = 
     {
         pin2 = hardware.pin2.read(),
         voltage = hardware.voltage()    // We'll also send the operating voltage.
@@ -56,8 +31,10 @@ function sendPins()
     // as the identifier.
     agent.send("impValues", pinValues);
 
-    // Schedule a wakeup in 100ms, with a callback to this function.
-    imp.wakeup(0.1, sendPins);
+    imp.wakeup(0.1, poll);
 }
+ 
+// Start the loop
+ 
+poll();
 
-sendPins(); // Call sendPins once, and let it do the rest of the work.
